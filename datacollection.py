@@ -81,8 +81,8 @@ def make_carla_settings(args):                                       ## normal f
     settings.set(
         SynchronousMode=False,
         SendNonPlayerAgentsInfo=True,
-        NumberOfVehicles=15,
-        NumberOfPedestrians=30,
+        NumberOfVehicles=0,
+        NumberOfPedestrians=0,
         WeatherId=random.choice([1, 3, 7, 8, 14]),
         QualityLevel=args.quality_level)
     settings.randomize_seeds()
@@ -526,4 +526,4 @@ if __name__ == '__main__':
         print('\nCancelled by user. Bye!')
 
 
-##################################################################################   Bus bhahut hoga aaj ke liye.....
+################################################################################
