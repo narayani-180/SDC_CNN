@@ -1,1 +1,2 @@
-# SDC_imitation
+# Advanced Imitation Learning
+Using *simple imitation learning* we can train a car to avoid obstacles and take simple turns. At test time there is some special route that a user might want to take and for the same we cant train a model specifically. To solve this problem, we are using *conditional imitation learning* where the vehicle takes simple decisions itself but higher level commands are take by the user at run time.
