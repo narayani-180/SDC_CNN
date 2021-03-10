@@ -32,8 +32,8 @@ data_dir=os.path.join(os.getcwd(),"img")
 
 def load_data():
     data_df = pd.read_csv(os.path.join(data_dir, 'out.csv'))
-    X = data_df[['center']].values
-    y = data_df[['steer','throttle','command','brake']].values
+    X = data_df[['center','command']].values
+    y = data_df[['steer','throttle','brake']].values
     X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=test_size, random_state=0)
     return X_train, X_valid, y_train, y_valid
 
@@ -51,7 +51,7 @@ def build_model():
     model.add(Dense(100, activation='elu'))
     model.add(Dense(50, activation='elu'))
     model.add(Dense(10, activation='elu'))
-    model.add(Dense(4))
+    model.add(Dense(3))
     # model.summary()
     # model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.0001))
     return model
@@ -77,19 +77,14 @@ def batch_generator(data_dir, image_paths, steering_angles, batch_size, is_train
     Generate training image give image paths and associated steering angles
     """
     images = np.empty([batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS])
-    steers = np.empty([batch_size,4])
+    steers = np.empty([batch_size,3])
     while True:
         i = 0
         for index in np.random.permutation(image_paths.shape[0]):
             center = image_paths[index]
             
-            steering_angle,throttle,command,brake= steering_angles[index]
-            if command == 'R':
-                cmd = 2
-            elif command == 'L':
-                cmd = 1
-            else :
-                cmd = 0
+            steering_angle,throttle,brake= steering_angles[index]
+            
             # argumentation
             # if is_training and np.random.rand() < 0.6:
             #     image, steering_angle = augument(data_dir, center, left, right, steering_angle)
@@ -97,7 +92,7 @@ def batch_generator(data_dir, image_paths, steering_angles, batch_size, is_train
             image = load_image(data_dir, *center) 
             # add the image and steering angle to the batch
             images[i] = preprocess(image)
-            steers[i] = [steering_angle,throttle,cmd,brake]
+            steers[i] = [steering_angle,throttle,brake]
             i += 1
             if i == batch_size:
                 break
