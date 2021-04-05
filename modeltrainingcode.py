@@ -32,28 +32,39 @@ data_dir=os.path.join(os.getcwd(),"img")
 
 def load_data():
     data_df = pd.read_csv(os.path.join(data_dir, 'out.csv'))
-    X = data_df[['center','command']].values
+    X = data_df[['center']].values
+    X1 = data_df[['command']].values
     y = data_df[['steer','throttle','brake']].values
-    X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=test_size, random_state=0)
+    X_train, X_valid, y_train, y_valid = train_test_split(X, X1, y, test_size=test_size, random_state=0)
     return X_train, X_valid, y_train, y_valid
 
 
 def build_model():
-    model = Sequential()
-    model.add(Lambda(lambda x: x/127.5-1.0, input_shape=INPUT_SHAPE))
-    model.add(Conv2D(24, 5,strides=(2, 2), activation='elu'))
-    model.add(Conv2D(36, 5, strides=(2, 2), activation='elu'))
-    model.add(Conv2D(48, 5, strides=(2, 2), activation='elu'))
-    model.add(Conv2D(64, 3, activation='elu'))
-    model.add(Conv2D(64, 3, activation='elu'))
-    model.add(Dropout(keep_prob))
-    model.add(Flatten())
-    model.add(Dense(100, activation='elu'))
-    model.add(Dense(50, activation='elu'))
-    model.add(Dense(10, activation='elu'))
-    model.add(Dense(3))
+    model1 = Sequential()
+    model1.add(Lambda(lambda x: x/127.5-1.0, input_shape=INPUT_SHAPE))
+    model1.add(Conv2D(24, 5,strides=(2, 2), activation='elu'))
+    model1.add(Conv2D(36, 5, strides=(2, 2), activation='elu'))
+    model1.add(Conv2D(48, 5, strides=(2, 2), activation='elu'))
+    model1.add(Conv2D(64, 3, activation='elu'))
+    model1.add(Conv2D(64, 3, activation='elu'))
+    model1.add(Dropout(keep_prob))
+    model1.add(Flatten())
+    model1.add(Dense(100, activation='elu'))
+    
+    
+    model2 = Sequential()
+    model2.add(Dense(1, input_shape=(X1), activation='elu'))
+    
+    model =  Concatenate([model1, model2])
+    model.add(Dense(3, activation='elu'))
+
+    
+    #model.add(Dense(50, activation='elu'))
+    #model.add(Dense(10, activation='elu'))
+    #model.add(Dense(3))
     # model.summary()
     # model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.0001))
+    
     return model
 
 
@@ -105,6 +116,7 @@ def train_model(model, X_train, X_valid, y_train, y_valid):
                                  verbose=0,
                                  save_best_only='true',
                                  mode='auto')
+                                 
     model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.0001),metrics=['accuracy'])
     history=model.fit_generator(batch_generator(data_dir, X_train, y_train, batch_size, True),
                         samples_per_epoch,
