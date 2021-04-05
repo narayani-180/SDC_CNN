@@ -43,6 +43,7 @@ def build_model():
     model1 = Sequential()
     model1.add(Lambda(lambda x: x/127.5-1.0, input_shape=INPUT_SHAPE))
     model1.add(Conv2D(24, 5,strides=(2, 2), activation='elu'))
+    model1.add(MaxPooling2D(pool_size=(2, 2)))
     model1.add(Conv2D(36, 5, strides=(2, 2), activation='elu'))
     model1.add(Conv2D(48, 5, strides=(2, 2), activation='elu'))
     model1.add(Conv2D(64, 3, activation='elu'))
