@@ -1,7 +1,7 @@
 import scipy.io as io
 import h5py
 from keras.models import Sequential
-from keras.layers import Flatten,Dense,Lambda,Conv2D,Dropout,Cropping2D,Convolution2D ,BatchNormalization,MaxPooling2D
+from keras.layers import Flatten,Dense,Lambda,Conv2D,Dropout,Cropping2D,Convolution2D ,BatchNormalization,MaxPooling2D , Concatenate , concatenate
 from keras import models, optimizers, backend
 from keras.layers import core, convolutional, pooling
 from keras.callbacks import ModelCheckpoint
@@ -35,7 +35,7 @@ def load_data():
     X = data_df[['center']].values
     X1 = data_df[['command']].values
     y = data_df[['steer','throttle','brake']].values
-    X_train, X_valid, y_train, y_valid = train_test_split(X, X1, y, test_size=test_size, random_state=0)
+    X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=test_size, random_state=0)
     return X_train, X_valid, y_train, y_valid
 
 
@@ -54,7 +54,7 @@ def build_model():
     
     
     model2 = Sequential()
-    model2.add(Dense(1, input_shape=(X1), activation='elu'))
+    model2.add(Dense(1, input_shape=(1,), activation='elu'))
     
     model =  Concatenate([model1, model2])
     model.add(Dense(3, activation='elu'))
